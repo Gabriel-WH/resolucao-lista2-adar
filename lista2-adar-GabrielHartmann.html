@@ -172,6 +172,16 @@ pre code {
 </div>
 
 
+<p>Carregando as bibliotecas que serão usadas</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
 <div id="exercícios" class="section level2">
 <h2>Exercícios</h2>
 <ol style="list-style-type: decimal">
@@ -571,7 +581,7 @@ abline(h = tar_met3, col = 7, lwd = 2)</code></pre>
 </ol>
 <p><span class="math display">\[\left\{ \begin{matrix}
 h_{T_{min}} \leq h \leq h_{T_{max}} , \; T_{calc} = \bar{T} - A\cos(arg) \\
-demais horas, \; T_{calc} = \bar{T} + A\cos(arg)
+demais \;\: horas, \; T_{calc} = \bar{T} + A\cos(arg)
 \end{matrix}\right.\]</span></p>
 <p>onde:</p>
 <p><span class="math display">\[ \bar{T} = \left(\frac{T_{máx}+T_{min}}{2} \right)\]</span></p>
@@ -666,6 +676,369 @@ rmse_est1</code></pre>
 
 rmse_est2</code></pre>
 <pre><code>## [1] 2.133115</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Calcule a correlação (<span class="math inline">\(r\)</span>) nos dois casos. A barra representa a média aritmética. Confira seu resultado com a saída da função <code>cor(tar_obs,</code>tar_calc)`.</li>
+</ol>
+<pre class="r"><code>corr_est1 &lt;- sum((tar_est1 - mean(tar_est1)) * (tar_calc_est1 - mean(tar_calc_est1))) / sqrt(sum( ((tar_est1 - mean(tar_est1) )^2)) * sum((tar_calc_est1 - mean(tar_calc_est1))^2) )
+
+corr_est1</code></pre>
+<pre><code>## [1] 0.9534668</code></pre>
+<pre class="r"><code>corr_est2 &lt;- sum((tar_est2 - mean(tar_est2)) * (tar_calc_est2 - mean(tar_calc_est2))) / sqrt(sum( ((tar_est2 - mean(tar_est2) )^2)) * sum((tar_calc_est2 - mean(tar_calc_est2))^2) )
+
+corr_est2</code></pre>
+<pre><code>## [1] 0.8546298</code></pre>
+<p>Conferindo o resultado com a saída da função <code>cor(tar_obs, tar_calc)</code></p>
+<pre class="r"><code>all.equal(
+          target = corr_est1,
+          current = cor(tar_est1, tar_calc_est1)
+)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>all.equal(
+          target = corr_est2,
+          current = cor(tar_est2, tar_calc_est2)
+)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Verifica-se que os resultados são idênticos, guardada certa precisão.</p>
+<hr />
+<ol start="11" style="list-style-type: decimal">
+<li>Os dados abaixo são de precipitação horária de um evento severo ocorrido em 03/12/2012 em Santa Maria-RS.</li>
+</ol>
+<pre class="r"><code>horas_q11 &lt;- 9:21
+prech_q11 &lt;- c(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 21.4, 41.2, 2.6, 1.0, 0.4, 0.0)</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>Como seria o código para determinar a soma cumulativa da precipitação horária? Salve o resultado em um vetor chamado <code>prec_acum</code>. Interprete o resultado de <code>c(NA, diff(prec_acum))</code>.</li>
+</ol>
+<pre class="r"><code>prec_acum &lt;- cumsum(prech_q11)
+prec_acum</code></pre>
+<pre><code>##  [1]  0.0  0.0  0.0  0.0  0.0  0.0  0.0 21.4 62.6 65.2 66.2 66.6 66.6</code></pre>
+<pre class="r"><code>c(NA, diff(prec_acum))</code></pre>
+<pre><code>##  [1]   NA  0.0  0.0  0.0  0.0  0.0  0.0 21.4 41.2  2.6  1.0  0.4  0.0</code></pre>
+<p>A função <code>diff()</code> calcula e diferença entre elementos consecutivos de um vetor, fazendo a subtração de cada componente (partindo do segundo) pelo seu anterior. Desse modo, o vetor resultante da aplicação de <code>diff()</code> tem uma posição a menos que o vetor passado como argumento. Fazer a diferença do resultado de uma soma cumulativa nos retorna o vetor original, passado como argumento na função <code>cumsum()</code>. Assim, o resultado de<code>c(NA, diff(prec_acum))</code> é o vetor da precipitação horária, mas com <code>NA</code> no lugar do valor da primeira posição.</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>MOstre o código para encontrar o horário de ocorrência da precipitação máxima.</li>
+</ol>
+<pre class="r"><code>hmax_q11 &lt;- horas_q11[which(prech_q11 == max(prech_q11))]
+hmax_q11</code></pre>
+<pre><code>## [1] 17</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Mostre o código para obter a hora de início e fim do evento de precipitação severa. Qual a duração do evento?</li>
+</ol>
+<p>Partindo do princípio que só é contemplado um evento de precipitação durante a série temporal dada (como é possível de observar que ocorre).</p>
+<pre class="r"><code>prech_logic &lt;- prech_q11 &gt; 0
+
+hora_ini &lt;- horas_q11[ which( cumsum(prech_logic) == 1)[1] ]
+hora_ini</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code>hora_fim &lt;- horas_q11 [which.max( cumsum(prech_logic))]
+hora_fim</code></pre>
+<pre><code>## [1] 20</code></pre>
+<pre class="r"><code>duracao &lt;- hora_fim - hora_ini + 1
+duracao</code></pre>
+<pre><code>## [1] 5</code></pre>
+<p>Agora se formos considerar a precipitação severa apenas quando a medição for maior que 20 mm.</p>
+<pre class="r"><code>prech_logic2 &lt;- prech_q11 &gt; 20.0
+
+hora_ini2 &lt;- horas_q11[ which( cumsum(prech_logic2) == 1)[1] ]
+hora_ini2</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code>hora_fim2 &lt;- horas_q11[ which.max( cumsum(prech_logic2))[1] ]
+hora_fim2</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>duracao2 &lt;- hora_fim2 - hora_ini2 + 1
+duracao2</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>limiar_cond &lt;- 20.0
+
+ocorr_cond &lt;- as.integer(prech_q11 &gt; limiar_cond)
+
+index_ini_cond &lt;- which(lag(ocorr_cond) - ocorr_cond &lt; 0)
+
+index_prim_cond &lt;- ifelse(
+  test = ocorr_cond[1] == 1,
+  yes = 1,
+  no = 0
+)
+index_ini_cond &lt;- c(index_prim_cond, index_ini_cond)
+
+index_fim_cond &lt;- which(lead(ocorr_cond) - ocorr_cond &lt; 0)
+
+index_ult_cond &lt;- ifelse(
+  test = ocorr_cond[length(ocorr_cond)] == 1,
+  yes = length(ocorr_cond),
+  no = 0
+)
+index_fim_cond &lt;- c(index_fim_cond, index_ult_cond)
+
+duracao_cond &lt;- horas_q11[index_fim_cond] - horas_q11[index_ini_cond] + 1
+
+duracao_cond</code></pre>
+<pre><code>## [1] 2</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Qual foi a precipitação total do evento? Quanto da precipitação total do evento, em %, ocorreu até às 17 h?</li>
+</ol>
+<pre class="r"><code>prec_tot &lt;- sum( prech_q11[which(horas_q11 == hora_ini):which(horas_q11 == hora_fim)] )
+prec_tot</code></pre>
+<pre><code>## [1] 66.6</code></pre>
+<pre class="r"><code>percent_17h &lt;- sum( prech_q11[which(horas_q11 == hora_ini):which(horas_q11 == 17)] ) / prec_tot * 100
+percent_17h</code></pre>
+<pre><code>## [1] 93.99399</code></pre>
+<p>Para o segundo caso considerado (em que o evento de precipitação severa só é considerando enquanto a precipitação horária for maior que 20 mm).</p>
+<pre class="r"><code>prec_tot2 &lt;- sum( prech_q11[which(horas_q11 == hora_ini2):which(horas_q11 == hora_fim2)] )
+prec_tot2</code></pre>
+<pre><code>## [1] 62.6</code></pre>
+<pre class="r"><code>percent_17h_2 &lt;- sum( prech_q11[which(horas_q11 == hora_ini2):which(horas_q11 == 17)] ) / prec_tot2 * 100
+percent_17h_2</code></pre>
+<pre><code>## [1] 100</code></pre>
+<ol start="12" style="list-style-type: decimal">
+<li>Considere o vetor <code>x</code> definido pelos números descritos abaixo. Mostre como encontrar o primeiro número positivo localizado após o último número negativo. Por exemplo, seja o vetor <code>z</code> definido pelos valores (11, 10, 15, 2, 6, -15, -10, -22, -8, 5, 7, 2, 12, 8, 4, 1, 3, -3, -1, 30, 14). Os valores selecionados seriam 5 e 30.</li>
+</ol>
+<pre class="r"><code>#considerando os valores do vetor x como os valores descritos de exemplo para o vetor z
+
+x_q12 &lt;- c(11, 10, 15, 2, 6, -15, -10, -22, -8, 5, 7, 2, 12, 8, 4, 1, 3, -3, -1, 30, 14)
+
+x_positiv &lt;- x_q12 &gt; 0
+posicao_q12 &lt;- which((lag(x_q12) * x_positiv) &lt; 0)
+
+x_q12[posicao_q12]</code></pre>
+<pre><code>## [1]  5 30</code></pre>
+<ol start="13" style="list-style-type: decimal">
+<li>Considerando o vetor <code>prec</code> com valores de precipitação diária indicado abaixo. Escreva o código para resolver as seguintes tarefas.</li>
+</ol>
+<pre class="r"><code>prec &lt;- c(
+  0, 0, 0, 0.8, 0, 0.01, 0.75, 0,
+  0, 0, 0, 0.35, 0.08, 0, 0, 0, 0, 0.31, 0, 3.57, 12.17, 0, 0,
+  0, 0.04, 3.16, 0, 0.95, 0.79, 0, 0, 0, 0, 0, 3.51, 0, 0, 0.16,
+  0, 0, 8.16, 0.54, 4.39, 1.24, 0, 0, 0, 0, 0, 2.43, 0, 0, 0, 0,
+  0, 7.18, 0, 0, 0.26, 0, 0, 0.28, 0, 0, 0.09, 0.38, 0, 0, 0, 0,
+  0, 0, 0.51, 0, 0, 0, 0, 0, 0, 0.67, 0, 0, 0, 0, 0.15, 0, 0.82,
+  0, 0, 0, 0, 0, 0, 0, 0, 0.37, 0, 0.58, 4.95, 0, 0, 0, 0, 0, 7.68,
+  0, 0, 0.37, 0, 1.56, 0, 0, 0, 0.34, 0.48, 0, 4.21, 2.28, 4.3,
+  0, 3.38, 0, 0, 0, 0, 7.28, 0, 4.89, 3.91, 0, 0, 0, 0, 0, 0, 2.93,
+  0, 2.49, 0.77, 0, 2.9, 3.53, 0.83, 0, 0, 0, 0.94, 0.59, 0, 0,
+  0, 0, 0.04, 0, 0.65, 0, 0, 0, 6.23, 0.09, 0, 0.66, 0, 0, 0, 4.42,
+  0, 0, 0, 0.84, 0, 0, 0, 0, 0, 0.09, 0, 0, 0.08, 0, 0.66, 0, 0,
+  0, 0.06, 0, 0, 0, 3.28, 0, 0.8, 5.69, 0.8, 0
+)</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>Quantos dias ocorreram no intervalo 0 &lt; prec &lt; 0.25?</li>
+</ol>
+<pre class="r"><code>prec_q13 &lt;- prec
+prec_int &lt;- prec_q13 &gt; 0 &amp; prec_q13 &lt; 0.25
+sum(prec_int)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Substitua os valores de chuva registrados no intervalo 0 &lt; prec &lt; 0.25 por 0.</li>
+</ol>
+<pre class="r"><code>prec_mod_q13 &lt;- ifelse(
+                       test = prec_q13 &gt; 0 &amp; prec_q13 &lt; 0.25,
+                       yes = 0,
+                       no = prec_q13
+                       )
+prec_mod_q13</code></pre>
+<pre><code>##   [1]  0.00  0.00  0.00  0.80  0.00  0.00  0.75  0.00  0.00  0.00  0.00  0.35
+##  [13]  0.00  0.00  0.00  0.00  0.00  0.31  0.00  3.57 12.17  0.00  0.00  0.00
+##  [25]  0.00  3.16  0.00  0.95  0.79  0.00  0.00  0.00  0.00  0.00  3.51  0.00
+##  [37]  0.00  0.00  0.00  0.00  8.16  0.54  4.39  1.24  0.00  0.00  0.00  0.00
+##  [49]  0.00  2.43  0.00  0.00  0.00  0.00  0.00  7.18  0.00  0.00  0.26  0.00
+##  [61]  0.00  0.28  0.00  0.00  0.00  0.38  0.00  0.00  0.00  0.00  0.00  0.00
+##  [73]  0.51  0.00  0.00  0.00  0.00  0.00  0.00  0.67  0.00  0.00  0.00  0.00
+##  [85]  0.00  0.00  0.82  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.37
+##  [97]  0.00  0.58  4.95  0.00  0.00  0.00  0.00  0.00  7.68  0.00  0.00  0.37
+## [109]  0.00  1.56  0.00  0.00  0.00  0.34  0.48  0.00  4.21  2.28  4.30  0.00
+## [121]  3.38  0.00  0.00  0.00  0.00  7.28  0.00  4.89  3.91  0.00  0.00  0.00
+## [133]  0.00  0.00  0.00  2.93  0.00  2.49  0.77  0.00  2.90  3.53  0.83  0.00
+## [145]  0.00  0.00  0.94  0.59  0.00  0.00  0.00  0.00  0.00  0.00  0.65  0.00
+## [157]  0.00  0.00  6.23  0.00  0.00  0.66  0.00  0.00  0.00  4.42  0.00  0.00
+## [169]  0.00  0.84  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
+## [181]  0.66  0.00  0.00  0.00  0.00  0.00  0.00  0.00  3.28  0.00  0.80  5.69
+## [193]  0.80  0.00</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Crie um vetor denominado <code>prec01</code> indicando o estado da precipitação (chuvoso = 1, seco = 0) baseado no limiar de 0.25 mm para detecção de chuva pelo pluviômetro.</li>
+</ol>
+<pre class="r"><code>prec01 &lt;- as.integer(prec_mod_q13 &gt; 0)
+prec01</code></pre>
+<pre><code>##   [1] 0 0 0 1 0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 1 1 0 0 0 0 1 0 1 1 0 0 0 0 0 1 0 0
+##  [38] 0 0 0 1 1 1 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 1 0
+##  [75] 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 1 1 0 0 0 0 0 1 0 0 1 0 1 0
+## [112] 0 0 1 1 0 1 1 1 0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 1 0 1 1 0 1 1 1 0 0 0 1 1
+## [149] 0 0 0 0 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+## [186] 0 0 0 1 0 1 1 1 0</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Qual a probabilidade de chuva dessa série de precipitação diária?</li>
+</ol>
+<pre class="r"><code>prob &lt;- sum(prec01)/length(prec01)
+prob</code></pre>
+<pre><code>## [1] 0.2835052</code></pre>
+<pre class="r"><code>prob_percent &lt;-prob*100
+prob_percent</code></pre>
+<pre><code>## [1] 28.35052</code></pre>
+<ol start="5" style="list-style-type: lower-alpha">
+<li>Qual a probabilidade de chover dois dias consecutivos (<code>p11</code>)? Calcule a probabilidade de chover em qualquer um de dois dias consecutivos (<code>p01 + p10</code>)?</li>
+</ol>
+<pre class="r"><code>p11 &lt;- prob*prob
+p11</code></pre>
+<pre><code>## [1] 0.08037517</code></pre>
+<pre class="r"><code>p11_percent &lt;- p11*100
+p11_percent</code></pre>
+<pre><code>## [1] 8.037517</code></pre>
+<pre class="r"><code>p01_p10 &lt;- ( prob * (1 - prob) ) + ( (1 - prob) * prob)
+p01_p10</code></pre>
+<pre><code>## [1] 0.40626</code></pre>
+<pre class="r"><code>p01_p10_percent &lt;- p01_p10*100
+p01_p10_percent</code></pre>
+<pre><code>## [1] 40.626</code></pre>
+<ol start="6" style="list-style-type: lower-alpha">
+<li>Determine a duração de cada evento chuvoso (número de dias consecutivos).</li>
+</ol>
+<pre class="r"><code>index_ini_chuv &lt;- which(lag(prec01) - prec01 &lt; 0)
+
+index_prim_chuv &lt;- ifelse(
+                          test = prec01[1] == 1,
+                          yes = 1,
+                          no = NA
+                          )
+
+index_ini_chuv &lt;- c(index_prim_chuv, index_ini_chuv)
+index_ini_chuv &lt;- index_ini_chuv[which(!is.na(index_ini_chuv))]
+
+index_fim_chuv &lt;- which(lead(prec01) - prec01 &lt; 0)
+
+index_ult_chuv &lt;- ifelse(
+                         test = prec01[length(prec01)] == 1,
+                         yes = length(prec01),
+                         no = NA
+                         )
+index_fim_chuv &lt;- c(index_fim_chuv, index_ult_chuv)
+index_fim_chuv &lt;- index_fim_chuv[which(!is.na(index_fim_chuv))]
+
+duracao_chuv &lt;- index_fim_chuv - index_ini_chuv + 1
+
+names(duracao_chuv) &lt;- paste(&quot;evento&quot;, (1:length(duracao_chuv)))
+duracao_chuv</code></pre>
+<pre><code>##  evento 1  evento 2  evento 3  evento 4  evento 5  evento 6  evento 7  evento 8 
+##         1         1         1         1         2         1         2         1 
+##  evento 9 evento 10 evento 11 evento 12 evento 13 evento 14 evento 15 evento 16 
+##         4         1         1         1         1         1         1         1 
+## evento 17 evento 18 evento 19 evento 20 evento 21 evento 22 evento 23 evento 24 
+##         1         1         2         1         1         1         2         3 
+## evento 25 evento 26 evento 27 evento 28 evento 29 evento 30 evento 31 evento 32 
+##         1         1         2         1         2         3         2         1 
+## evento 33 evento 34 evento 35 evento 36 evento 37 evento 38 evento 39 
+##         1         1         1         1         1         1         3</code></pre>
+<ol start="14" style="list-style-type: decimal">
+<li>Dado o vetor <code>dados</code> mostrado abaixo.</li>
+</ol>
+<pre class="r"><code>dados &lt;- c(
+  NA, NA, 27L, 7L, 4L, 0L, 26L, 15L, 25L, NA, NA, NA, NA, 6L,
+  29L, 18L, 17L, 23L, 20L, 1L, 30L, 13L, NA, NA, NA, NA, NA, NA,
+  NA, 19L
+)</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>Como você pode codificar a obtenção de um vetor com zeros nos valores válidos e com números sequênciais dentro das falhas?</li>
+</ol>
+<pre class="r"><code>vetor_14a &lt;- ifelse(
+  test = is.na(dados),
+  yes = cumsum(is.na(dados)),
+  no = 0
+)
+
+vetor_14a</code></pre>
+<pre><code>##  [1]  1  2  0  0  0  0  0  0  0  3  4  5  6  0  0  0  0  0  0  0  0  0  7  8  9
+## [26] 10 11 12 13  0</code></pre>
+<pre class="r"><code>#ou
+vetor_14a[!is.na(dados)] &lt;- 0
+vetor_14a[is.na(dados)] &lt;- 1:sum(is.na(dados))
+
+vetor_14a</code></pre>
+<pre><code>##  [1]  1  2  0  0  0  0  0  0  0  3  4  5  6  0  0  0  0  0  0  0  0  0  7  8  9
+## [26] 10 11 12 13  0</code></pre>
+<p>Talvez devesse ser feito assim</p>
+<pre class="r"><code>vetor_14a2 &lt;- as.integer(is.na(dados))
+index_ini_fail &lt;- which(lag(vetor_14a2) - vetor_14a2 &lt; 0)
+
+index_prim_fail &lt;- ifelse(
+                          test = vetor_14a2[1] == 1,
+                          yes = 1,
+                          no = NA
+                          )
+
+index_ini_fail &lt;- c(index_prim_fail, index_ini_fail)
+index_ini_fail &lt;- index_ini_fail[which(!is.na(index_ini_fail))]
+
+index_fim_fail &lt;- which(lead(vetor_14a2) - vetor_14a2 &lt; 0)
+
+index_ult_fail &lt;- ifelse(
+                         test = vetor_14a2[length(vetor_14a2)] == 1,
+                         yes = length(vetor_14a2),
+                         no = NA
+                         )
+index_fim_fail &lt;- c(index_fim_fail, index_ult_fail)
+index_fim_fail &lt;- index_fim_fail[which(!is.na(index_fim_fail))]
+
+duracao_fail &lt;- index_fim_fail - index_ini_fail + 1
+duracao_fail</code></pre>
+<pre><code>## [1] 2 4 7</code></pre>
+<pre class="r"><code>vetor_14a2[vetor_14a2 &gt; 0] &lt;- rep(seq_along(duracao_fail), times = duracao_fail)
+vetor_14a2</code></pre>
+<pre><code>##  [1] 1 1 0 0 0 0 0 0 0 2 2 2 2 0 0 0 0 0 0 0 0 0 3 3 3 3 3 3 3 0</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Como a partir do vetor resultante do item anterior você pode obter um vetor cujo os valores dentro das falhas indique a ordem de ocorrência da falha.</li>
+</ol>
+<p>não entendi a proposta, mas pode ser assim</p>
+<pre class="r"><code>vetor_14b &lt;- dados
+names(vetor_14b) &lt;- ifelse(
+  test = is.na(vetor_14b),
+  yes = paste(&quot;falha&quot;, vetor_14a),
+  no = &quot;válido&quot;
+)
+vetor_14b</code></pre>
+<pre><code>##  falha 1  falha 2   válido   válido   válido   válido   válido   válido 
+##       NA       NA       27        7        4        0       26       15 
+##   válido  falha 3  falha 4  falha 5  falha 6   válido   válido   válido 
+##       25       NA       NA       NA       NA        6       29       18 
+##   válido   válido   válido   válido   válido   válido  falha 7  falha 8 
+##       17       23       20        1       30       13       NA       NA 
+##  falha 9 falha 10 falha 11 falha 12 falha 13   válido 
+##       NA       NA       NA       NA       NA       19</code></pre>
+<p>Ou assim</p>
+<pre class="r"><code>vetor_14b2 &lt;- dados
+names(vetor_14b2) &lt;- ifelse(
+  test = is.na(dados),
+  yes = paste(&quot;falha&quot;, vetor_14a2),
+  no = &quot;válido&quot;
+)
+vetor_14b2</code></pre>
+<pre><code>## falha 1 falha 1  válido  válido  válido  válido  válido  válido  válido falha 2 
+##      NA      NA      27       7       4       0      26      15      25      NA 
+## falha 2 falha 2 falha 2  válido  válido  válido  válido  válido  válido  válido 
+##      NA      NA      NA       6      29      18      17      23      20       1 
+##  válido  válido falha 3 falha 3 falha 3 falha 3 falha 3 falha 3 falha 3  válido 
+##      30      13      NA      NA      NA      NA      NA      NA      NA      19</code></pre>
+<p>Ou até assim</p>
+<pre class="r"><code>vetor_14b3 &lt;- vetor_14a2[is.na(dados)]</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Qual o código para determinar o tamanho de cada falha?</li>
+</ol>
+<p>A partir da segunda proposta que está sendo desenvolvida nessa questão.</p>
+<pre class="r"><code>aux_14c &lt;- ifelse(
+  test = vetor_14a2 == 0,
+  yes = NA,
+  no = vetor_14a2
+)
+
+tam_14c &lt;- table(aux_14c)
+names(tam_14c) &lt;- paste0(&quot;tam_fail_&quot;, names(tam_14c))
+tam_14c</code></pre>
+<pre><code>## tam_fail_1 tam_fail_2 tam_fail_3 
+##          2          4          7</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Como determinar o tamanho da maior falha?</li>
+</ol>
+<p>Também a partir da segunda proposta desenvolvida nessa questão.</p>
+<pre class="r"><code>max_fail_tam &lt;- tam_14c[which(duracao_fail == max(duracao_fail))]
+max_fail_tam</code></pre>
+<pre><code>## tam_fail_3 
+##          7</code></pre>
 </div>
 
 
