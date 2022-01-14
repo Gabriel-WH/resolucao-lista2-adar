@@ -580,11 +580,11 @@ abline(h = tar_met3, col = 7, lwd = 2)</code></pre>
 <li>Calcule a temperatura do ar horária usando o <strong>modelo de onda</strong> para representação do ciclo diário da temperatura do ar, descrito pelas seguintes equações:</li>
 </ol>
 <p><span class="math display">\[\left\{ \begin{matrix}
-h_{T_{min}} \leq h \leq h_{T_{max}} , \; T_{calc} = \bar{T} - A\cos(arg) \\
-demais \;\: horas, \; T_{calc} = \bar{T} + A\cos(arg)
+h_{T_{min}} \leq h \leq h_{T_{max}} , \; T_{calc} = \overline{T} - A\cos(arg) \\
+\text{demais horas}, \; T_{calc} = \overline{T} + A\cos(arg)
 \end{matrix}\right.\]</span></p>
 <p>onde:</p>
-<p><span class="math display">\[ \bar{T} = \left(\frac{T_{máx}+T_{min}}{2} \right)\]</span></p>
+<p><span class="math display">\[ \overline{T} = \left(\frac{T_{máx}+T_{min}}{2} \right)\]</span></p>
 <p>e</p>
 <p><span class="math display">\[ A =\left(\frac{T_{máx}-T_{min}}{2} \right)\]</span></p>
 <p>O argumento do cosseno <span class="math inline">\((arg)\)</span> é definido por:</p>
@@ -715,7 +715,7 @@ prec_acum</code></pre>
 <pre><code>##  [1]   NA  0.0  0.0  0.0  0.0  0.0  0.0 21.4 41.2  2.6  1.0  0.4  0.0</code></pre>
 <p>A função <code>diff()</code> calcula e diferença entre elementos consecutivos de um vetor, fazendo a subtração de cada componente (partindo do segundo) pelo seu anterior. Desse modo, o vetor resultante da aplicação de <code>diff()</code> tem uma posição a menos que o vetor passado como argumento. Fazer a diferença do resultado de uma soma cumulativa nos retorna o vetor original, passado como argumento na função <code>cumsum()</code>. Assim, o resultado de<code>c(NA, diff(prec_acum))</code> é o vetor da precipitação horária, mas com <code>NA</code> no lugar do valor da primeira posição.</p>
 <ol start="2" style="list-style-type: lower-alpha">
-<li>MOstre o código para encontrar o horário de ocorrência da precipitação máxima.</li>
+<li>Mostre o código para encontrar o horário de ocorrência da precipitação máxima.</li>
 </ol>
 <pre class="r"><code>hmax_q11 &lt;- horas_q11[which(prech_q11 == max(prech_q11))]
 hmax_q11</code></pre>
@@ -789,6 +789,7 @@ prec_tot2</code></pre>
 <pre class="r"><code>percent_17h_2 &lt;- sum( prech_q11[which(horas_q11 == hora_ini2):which(horas_q11 == 17)] ) / prec_tot2 * 100
 percent_17h_2</code></pre>
 <pre><code>## [1] 100</code></pre>
+<hr />
 <ol start="12" style="list-style-type: decimal">
 <li>Considere o vetor <code>x</code> definido pelos números descritos abaixo. Mostre como encontrar o primeiro número positivo localizado após o último número negativo. Por exemplo, seja o vetor <code>z</code> definido pelos valores (11, 10, 15, 2, 6, -15, -10, -22, -8, 5, 7, 2, 12, 8, 4, 1, 3, -3, -1, 30, 14). Os valores selecionados seriam 5 e 30.</li>
 </ol>
@@ -801,6 +802,7 @@ posicao_q12 &lt;- which((lag(x_q12) * x_positiv) &lt; 0)
 
 x_q12[posicao_q12]</code></pre>
 <pre><code>## [1]  5 30</code></pre>
+<hr />
 <ol start="13" style="list-style-type: decimal">
 <li>Considerando o vetor <code>prec</code> com valores de precipitação diária indicado abaixo. Escreva o código para resolver as seguintes tarefas.</li>
 </ol>
@@ -925,6 +927,7 @@ duracao_chuv</code></pre>
 ##         1         1         2         1         2         3         2         1 
 ## evento 33 evento 34 evento 35 evento 36 evento 37 evento 38 evento 39 
 ##         1         1         1         1         1         1         3</code></pre>
+<hr />
 <ol start="14" style="list-style-type: decimal">
 <li>Dado o vetor <code>dados</code> mostrado abaixo.</li>
 </ol>
@@ -952,7 +955,7 @@ vetor_14a[is.na(dados)] &lt;- 1:sum(is.na(dados))
 vetor_14a</code></pre>
 <pre><code>##  [1]  1  2  0  0  0  0  0  0  0  3  4  5  6  0  0  0  0  0  0  0  0  0  7  8  9
 ## [26] 10 11 12 13  0</code></pre>
-<p>Talvez devesse ser feito assim</p>
+<p>Talvez devesse ser feito assim.</p>
 <pre class="r"><code>vetor_14a2 &lt;- as.integer(is.na(dados))
 index_ini_fail &lt;- which(lag(vetor_14a2) - vetor_14a2 &lt; 0)
 
@@ -1039,6 +1042,157 @@ tam_14c</code></pre>
 max_fail_tam</code></pre>
 <pre><code>## tam_fail_3 
 ##          7</code></pre>
+<hr />
+<ol start="15" style="list-style-type: decimal">
+<li>Para os valores da velocidade (<span class="math inline">\(V_h\)</span>) e a direção do vento (<span class="math inline">\(\theta\)</span>) (na convenção meteorológica):</li>
+</ol>
+<p><span class="math inline">\(V_h\)</span> = (10, 10, 10, 10, 14.142, 14.142, 14.142, 14.142, 0)</p>
+<p><span class="math inline">\(\theta\)</span> = (270, 180, 360, 90, 225, 315, 135, 45, 0)</p>
+<ol style="list-style-type: lower-alpha">
+<li>Determine as componentes zonal e meridional do vento.</li>
+</ol>
+<p><span class="math display">\[
+u = -V_h \cdot \sin(\theta_{rad}) \\
+v = -V_h \cdot \cos(\theta_{rad})
+\]</span></p>
+<pre class="r"><code>veloc &lt;- c(10, 10, 10, 10, 14.142, 14.142, 14.142, 14.142, 0)
+
+direcao &lt;- c(270, 180, 360, 90, 225, 315, 135, 45, 0)
+
+u_vento &lt;- -veloc * sin((direcao * pi) / (180))
+u_vento</code></pre>
+<pre><code>## [1]  1.000000e+01 -1.224606e-15  2.449213e-15 -1.000000e+01  9.999904e+00
+## [6]  9.999904e+00 -9.999904e+00 -9.999904e+00  0.000000e+00</code></pre>
+<pre class="r"><code>v_vento &lt;- -veloc * cos((direcao * pi) / (180))
+v_vento</code></pre>
+<pre><code>## [1]  1.836910e-15  1.000000e+01 -1.000000e+01 -6.123032e-16  9.999904e+00
+## [6] -9.999904e+00  9.999904e+00 -9.999904e+00  0.000000e+00</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Faça os cálculos necessários para reconstruir <span class="math inline">\(V_h\)</span> e <span class="math inline">\(\theta\)</span>, a partir de <span class="math inline">\(u\)</span> e <span class="math inline">\(v\)</span> determinados no item <strong>a</strong>. Por convenção, a direção do vento <span class="math inline">\(\theta\)</span> em condições calmas (<span class="math inline">\(V_h\)</span> &lt; 0.m s<sup>-1</sup>) é assumida como 0º.</li>
+</ol>
+<p>$$ V_h = (u<sup>2+v</sup>2) \</p>
+<p>_{mat} = atan2(-u, -v)  \</p>
+{
+<span class="math display">\[\begin{matrix}
+\theta_{mat} + 360 \;\: \text{se} \:\; \theta_{mat} &lt; 0 \\
+0 \;\: \text{se} \;\: u=0, \: v=0 \;\; \text{ou} \;\; V_h &lt; 0.5 
+\end{matrix}\]</span>
+<p>. $$</p>
+<pre class="r"><code>veloc_15b &lt;- sqrt(u_vento^2 + v_vento^2)
+veloc_15b</code></pre>
+<pre><code>## [1] 10.000 10.000 10.000 10.000 14.142 14.142 14.142 14.142  0.000</code></pre>
+<pre class="r"><code>theta_mat &lt;- atan2(-u_vento, -v_vento) * (180 / pi)
+
+theta_15b &lt;- ifelse(
+  test = theta_mat &lt; 0,
+  yes = theta_mat + 360,
+  no = theta_mat
+)
+
+theta_15b[veloc &lt; 0.5] &lt;- 0
+theta_15b</code></pre>
+<pre><code>## [1] 270 180 360  90 225 315 135  45   0</code></pre>
+<hr />
+<ol start="16" style="list-style-type: decimal">
+<li>Para as séries de <code>prec_obs</code> e <code>prec_sim</code> calcule:</li>
+</ol>
+<p>a.A proporção corretamente prevista <span class="math inline">\(PC = \frac{wc + dc}{n}\)</span></p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>O índice de sucesso crítico <span class="math inline">\(CSI = \frac{wc}{wc + wi + di}\)</span></li>
+</ol>
+<p>Onde <span class="math inline">\(wc\)</span> e <span class="math inline">\(dc\)</span> são as previsões corretas de dias úmidos (<span class="math inline">\(prec &gt; 0.25\)</span> mm dia<sup>-1</sup>) e secos respectivamente, <span class="math inline">\(wi\)</span> e <span class="math inline">\(di\)</span> são as previsões incorretas de dias úmidos e secos respectivamente. <span class="math inline">\(n\)</span> é o nº total de previsões.</p>
+<pre class="r"><code>prec_obs &lt;- c(
+  0, 0, 0, 0.5, 1, 6, 9, 0.2, 1, 0, 0, 0.25,
+  10, 15, 8, 3, 0, 0, 0, 0, 0, 0, 0.25, 0,
+  0, 0, 1, 5, 0, 20, 0, 0, 0, 0, 1, 1,
+  0, 2, 12, 1, 0, 0, 0, 0, 0, 0, 5, 5
+)
+prec_sim &lt;- c(
+  0, 0.2, 0.1, 0, 0, 3, 1, 1, 1, 1, 0, 3,
+  0, 10, 4, 1, 0.3, 0.5, 0.5, 0.5, 0.5, 0, 0.25, 0.25,
+  0.25, 0, 0.5, 3, 0, 5, 0, 0, 0, 0, 0.5, 0,
+  0.25, 0.2, 0, 0.2, 0, 0, 0, 0, 1, 2, 1, 0
+)</code></pre>
+<p><strong>Solução</strong></p>
+<ol style="list-style-type: lower-alpha">
+<li></li>
+</ol>
+<pre class="r"><code>wc &lt;- sum(prec_obs[prec_sim &gt; 0.25] &gt; 0.25)
+wc</code></pre>
+<pre><code>## [1] 11</code></pre>
+<pre class="r"><code>dc &lt;- sum(prec_obs[prec_sim &lt;= 0.25] &lt;= 0.25)
+dc</code></pre>
+<pre><code>## [1] 19</code></pre>
+<pre class="r"><code>pc &lt;- (wc + dc) / length(prec_sim)
+pc</code></pre>
+<pre><code>## [1] 0.625</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li></li>
+</ol>
+<pre class="r"><code>wi &lt;- sum(prec_obs[prec_sim &gt; 0.25] &lt;= 0.25)
+wi</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>di &lt;- sum(prec_obs[prec_sim &lt;= 0.25] &gt; 0.25)
+di</code></pre>
+<pre><code>## [1] 8</code></pre>
+<pre class="r"><code>csi &lt;- wc / (wc + wi + di)
+csi</code></pre>
+<pre><code>## [1] 0.3793103</code></pre>
+<ol start="17" style="list-style-type: decimal">
+<li>Escreva o código para calcular as estatísticas abaixo, entre os vetores de valores observados (<code>obs</code>) e previstos (<code>prev</code>) por um dado modelo atmosférico, em um dado local.</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li>O Viés relativo (%).</li>
+</ol>
+<p><span class="math display">\[
+PBIAS = 100 \frac{\sum_{i = 1}^{n}(Prev_i - Obs_i)}{\sum_{i = 1}^{n}(Obs_i)}
+\]</span></p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Coeficiente de eficiência de Nash-Sutcliffe (NSE).</li>
+</ol>
+<p><span class="math display">\[
+NSE = 1 - \frac{\sum_{i = 1}^{n} (Obs_i - Sim_i)^2}{\sum_{i = 1}^{n} (Obs_i - \overline{Obs_i})^2}
+\]</span></p>
+<pre class="r"><code>v_obs &lt;- c(
+  -0.49, 0.27, -0.48, 0.8, -1, 0.1, -1.16,
+  0.58, -1.6, -0.31, 0.45, -0.98, 0.19, 0.73,
+  -0.49, -0.04, -0.11, 0.46, 2.02, -1.05
+)
+v_prev &lt;- c(
+  NA, -0.49, 0.27, -0.48, 0.8, -1, 0.1, -1.16,
+  0.58, -1.6, -0.31, 0.45, -0.98, 0.19, 0.73,
+  -0.49, -0.04, -0.11, 0.46, 2.02
+)</code></pre>
+<p><strong>Solução</strong></p>
+<ol style="list-style-type: lower-alpha">
+<li></li>
+</ol>
+<pre class="r"><code>pbias = 100 * (sum(v_prev - v_obs, na.rm = TRUE) / sum(v_obs, na.rm = TRUE))
+pbias</code></pre>
+<pre><code>## [1] -26.54028</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li></li>
+</ol>
+<pre class="r"><code>nse &lt;- 1 - (sum((v_obs - v_prev)^2, na.rm = TRUE) / sum((v_obs - mean(v_obs, na.rm = TRUE))^2))
+nse</code></pre>
+<pre><code>## [1] -1.660687</code></pre>
+<p>Outra forma de fazer, provavelmente mais correta, seria excluindo a primeira posição dos dois vetores, para que durante o cálculo das funções que excluem o valores de <code>NA</code> os dois vetores contribuissem com a mesma quantidade de elementos.</p>
+<p>a2.</p>
+<pre class="r"><code>v2_obs &lt;- v_obs[2:length(v_obs)]
+v2_obs</code></pre>
+<pre><code>##  [1]  0.27 -0.48  0.80 -1.00  0.10 -1.16  0.58 -1.60 -0.31  0.45 -0.98  0.19
+## [13]  0.73 -0.49 -0.04 -0.11  0.46  2.02 -1.05</code></pre>
+<pre class="r"><code>v2_prev &lt;- v_prev[2:length(v_prev)]
+v2_prev</code></pre>
+<pre><code>##  [1] -0.49  0.27 -0.48  0.80 -1.00  0.10 -1.16  0.58 -1.60 -0.31  0.45 -0.98
+## [13]  0.19  0.73 -0.49 -0.04 -0.11  0.46  2.02</code></pre>
+<pre class="r"><code>pbias2 &lt;-100 * (sum(v2_prev - v2_obs) / sum(v2_obs))
+pbias2</code></pre>
+<pre><code>## [1] -34.5679</code></pre>
+<p>b2.</p>
+<pre class="r"><code>nse2 &lt;- 1 - (sum((v2_obs - v2_prev)^2) / sum((v2_obs - mean(v2_obs))^2))
+nse2</code></pre>
+<pre><code>## [1] -1.691282</code></pre>
 </div>
 
 

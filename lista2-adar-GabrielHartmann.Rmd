@@ -487,13 +487,13 @@ O melhor é `tmed_est2`, da questão 1, por levar em conta mais valores.
 10. Calcule a temperatura do ar horária usando o **modelo de onda** para representação do ciclo diário da temperatura do ar, descrito pelas seguintes equações:
 
 $$\left\{ \begin{matrix}
-h_{T_{min}} \leq h \leq h_{T_{max}} , \; T_{calc} = \bar{T} - A\cos(arg) \\
-demais \;\: horas, \; T_{calc} = \bar{T} + A\cos(arg)
+h_{T_{min}} \leq h \leq h_{T_{max}} , \; T_{calc} = \overline{T} - A\cos(arg) \\
+\text{demais horas}, \; T_{calc} = \overline{T} + A\cos(arg)
 \end{matrix}\right.$$
 
 onde:
 
-$$ \bar{T} = \left(\frac{T_{máx}+T_{min}}{2} \right)$$
+$$ \overline{T} = \left(\frac{T_{máx}+T_{min}}{2} \right)$$
 
 e
 
@@ -646,7 +646,7 @@ c(NA, diff(prec_acum))
 
 A função `diff()` calcula e diferença entre elementos consecutivos de um vetor, fazendo a subtração de cada componente (partindo do segundo) pelo seu anterior. Desse modo, o vetor resultante da aplicação de `diff()` tem uma posição a menos que o vetor passado como argumento. Fazer a diferença do resultado de uma soma cumulativa nos retorna o vetor original, passado como argumento na função `cumsum()`. Assim, o resultado  de`c(NA, diff(prec_acum))` é o vetor da precipitação horária, mas com `NA` no lugar do valor da primeira posição.
 
-b. MOstre o código para encontrar o horário de ocorrência da precipitação máxima.
+b. Mostre o código para encontrar o horário de ocorrência da precipitação máxima.
 
 ```{r}
 hmax_q11 <- horas_q11[which(prech_q11 == max(prech_q11))]
@@ -734,6 +734,8 @@ percent_17h_2 <- sum( prech_q11[which(horas_q11 == hora_ini2):which(horas_q11 ==
 percent_17h_2
 ```
 
+- - -
+
 12. Considere o vetor `x` definido pelos números descritos abaixo. Mostre como encontrar o primeiro número positivo localizado após o último número negativo. Por exemplo, seja o vetor `z` definido pelos valores (11, 10, 15, 2, 6, -15, -10, -22, -8, 5, 7, 2, 12, 8, 4, 1, 3, -3, -1, 30, 14). Os valores selecionados seriam 5 e 30.
 
 ```{r}
@@ -746,6 +748,8 @@ posicao_q12 <- which((lag(x_q12) * x_positiv) < 0)
 
 x_q12[posicao_q12]
 ```
+
+- - -
 
 13. Considerando o vetor `prec` com valores de precipitação diária indicado abaixo. Escreva o código para resolver as seguintes tarefas.
 
@@ -847,6 +851,8 @@ names(duracao_chuv) <- paste("evento", (1:length(duracao_chuv)))
 duracao_chuv
 ```
 
+- - -
+
 14. Dado o vetor `dados` mostrado abaixo.
 
 ```{r}
@@ -874,7 +880,7 @@ vetor_14a[is.na(dados)] <- 1:sum(is.na(dados))
 
 vetor_14a
 ```
-Talvez devesse ser feito assim
+Talvez devesse ser feito assim.
 
 ```{r}
 vetor_14a2 <- as.integer(is.na(dados))
@@ -962,5 +968,180 @@ Também a partir da segunda proposta desenvolvida nessa questão.
 ```{r}
 max_fail_tam <- tam_14c[which(duracao_fail == max(duracao_fail))]
 max_fail_tam
+```
+
+- - -
+
+15. Para os valores da velocidade ($V_h$) e a direção do vento ($\theta$) (na convenção meteorológica):
+
+$V_h$ = (10, 10, 10, 10, 14.142, 14.142, 14.142, 14.142, 0)
+
+$\theta$ = (270, 180, 360, 90, 225, 315, 135, 45, 0)
+
+a. Determine as componentes zonal e meridional do vento.
+
+$$
+u = -V_h \cdot \sin(\theta_{rad}) \\
+v = -V_h \cdot \cos(\theta_{rad})
+$$
+
+```{r}
+veloc <- c(10, 10, 10, 10, 14.142, 14.142, 14.142, 14.142, 0)
+
+direcao <- c(270, 180, 360, 90, 225, 315, 135, 45, 0)
+
+u_vento <- -veloc * sin((direcao * pi) / (180))
+u_vento
+
+v_vento <- -veloc * cos((direcao * pi) / (180))
+v_vento
+```
+
+b. Faça os cálculos necessários para reconstruir $V_h$ e $\theta$, a partir de $u$ e $v$ determinados no item **a**. Por convenção, a direção do vento $\theta$ em condições calmas ($V_h$ < 0.m s^-1^) é assumida como 0º.
+
+$$
+V_h = \sqrt(u^2+v^2) \\
+
+\theta_{mat} = atan2(-u, -v) \cdot \frac{180}{\pi} \\
+
+\left\{ \begin{matrix}
+\theta_{mat} + 360 \;\: \text{se} \:\; \theta_{mat} < 0 \\
+0 \;\: \text{se} \;\: u=0, \: v=0 \;\; \text{ou} \;\; V_h < 0.5 
+\end{matrix} \right.
+$$
+
+```{r}
+veloc_15b <- sqrt(u_vento^2 + v_vento^2)
+veloc_15b
+
+theta_mat <- atan2(-u_vento, -v_vento) * (180 / pi)
+
+theta_15b <- ifelse(
+  test = theta_mat < 0,
+  yes = theta_mat + 360,
+  no = theta_mat
+)
+
+theta_15b[veloc < 0.5] <- 0
+theta_15b
+
+```
+
+- - -
+
+16. Para as séries de `prec_obs` e `prec_sim` calcule:
+
+   a.A proporção corretamente prevista $PC = \frac{wc + dc}{n}$
+   
+   b. O índice de sucesso crítico $CSI = \frac{wc}{wc + wi + di}$
+   
+Onde $wc$ e $dc$ são as previsões corretas de dias úmidos ($prec > 0.25$ mm dia^-1^) e secos respectivamente, $wi$ e $di$ são as previsões incorretas de dias úmidos e secos respectivamente. $n$ é o nº total de previsões.
+
+```{r}
+prec_obs <- c(
+  0, 0, 0, 0.5, 1, 6, 9, 0.2, 1, 0, 0, 0.25,
+  10, 15, 8, 3, 0, 0, 0, 0, 0, 0, 0.25, 0,
+  0, 0, 1, 5, 0, 20, 0, 0, 0, 0, 1, 1,
+  0, 2, 12, 1, 0, 0, 0, 0, 0, 0, 5, 5
+)
+prec_sim <- c(
+  0, 0.2, 0.1, 0, 0, 3, 1, 1, 1, 1, 0, 3,
+  0, 10, 4, 1, 0.3, 0.5, 0.5, 0.5, 0.5, 0, 0.25, 0.25,
+  0.25, 0, 0.5, 3, 0, 5, 0, 0, 0, 0, 0.5, 0,
+  0.25, 0.2, 0, 0.2, 0, 0, 0, 0, 1, 2, 1, 0
+)
+```
+
+**Solução**
+
+a.
+
+```{r}
+wc <- sum(prec_obs[prec_sim > 0.25] > 0.25)
+wc
+
+dc <- sum(prec_obs[prec_sim <= 0.25] <= 0.25)
+dc
+
+pc <- (wc + dc) / length(prec_sim)
+pc
+```
+
+b.
+
+```{r}
+wi <- sum(prec_obs[prec_sim > 0.25] <= 0.25)
+wi
+
+di <- sum(prec_obs[prec_sim <= 0.25] > 0.25)
+di
+
+csi <- wc / (wc + wi + di)
+csi
+```
+
+17. Escreva o código para calcular as estatísticas abaixo, entre os vetores de valores observados (`obs`) e previstos (`prev`) por um dado modelo atmosférico, em um dado local.
+
+a. O Viés relativo (%).
+
+$$
+PBIAS = 100 \frac{\sum_{i = 1}^{n}(Prev_i - Obs_i)}{\sum_{i = 1}^{n}(Obs_i)}
+$$
+
+b. Coeficiente de eficiência de Nash-Sutcliffe (NSE).
+
+$$
+NSE = 1 - \frac{\sum_{i = 1}^{n} (Obs_i - Sim_i)^2}{\sum_{i = 1}^{n} (Obs_i - \overline{Obs_i})^2}
+$$
+
+```{r}
+v_obs <- c(
+  -0.49, 0.27, -0.48, 0.8, -1, 0.1, -1.16,
+  0.58, -1.6, -0.31, 0.45, -0.98, 0.19, 0.73,
+  -0.49, -0.04, -0.11, 0.46, 2.02, -1.05
+)
+v_prev <- c(
+  NA, -0.49, 0.27, -0.48, 0.8, -1, 0.1, -1.16,
+  0.58, -1.6, -0.31, 0.45, -0.98, 0.19, 0.73,
+  -0.49, -0.04, -0.11, 0.46, 2.02
+)
+```
+
+**Solução**
+
+a.
+
+```{r}
+pbias = 100 * (sum(v_prev - v_obs, na.rm = TRUE) / sum(v_obs, na.rm = TRUE))
+pbias
+```
+
+b.
+
+```{r}
+nse <- 1 - (sum((v_obs - v_prev)^2, na.rm = TRUE) / sum((v_obs - mean(v_obs, na.rm = TRUE))^2))
+nse
+```
+
+Outra forma de fazer, provavelmente mais correta, seria excluindo a primeira posição dos dois vetores, para que durante o cálculo das funções que excluem o valores de `NA` os dois vetores contribuissem com a mesma quantidade de elementos.
+
+a2.
+
+```{r}
+v2_obs <- v_obs[2:length(v_obs)]
+v2_obs
+
+v2_prev <- v_prev[2:length(v_prev)]
+v2_prev
+
+pbias2 <-100 * (sum(v2_prev - v2_obs) / sum(v2_obs))
+pbias2
+```
+
+b2.
+
+```{r}
+nse2 <- 1 - (sum((v2_obs - v2_prev)^2) / sum((v2_obs - mean(v2_obs))^2))
+nse2
 ```
 
